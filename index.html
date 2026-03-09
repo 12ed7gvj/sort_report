@@ -3,102 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>氣泡排序法 (方塊版)</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .container {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .number {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .number .block {
-            width: 50px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-            border-radius: 5px;
-        }
-        .number span {
-            margin-top: 5px;
-            font-weight: bold;
-        }
-    </style>
+    <title>Bubble Sort</title>
 </head>
 <body>
-    <h1>氣泡排序法 (方塊版)</h1>
-    <p>輸入一組數字，按下排序按鈕後，將使用氣泡排序法進行排序，並以彩色方塊顯示排序過程。</p>
-    <label for="numbers">輸入數字 (以逗號分隔):</label>
-    <input type="text" id="numbers" placeholder="例如: 5,3,8,6,2">
-    <button onclick="startBubbleSort()">排序</button>
-    <div class="container" id="visualization"></div>
+    <h1>Bubble Sort</h1>
+    <p>這是一個展示 Bubble Sort 的頁面。</p>
+    <button onclick="goToHome()">回到首頁</button>
 
     <script>
-        function createVisualization(arr) {
-            const container = document.getElementById('visualization');
-            container.innerHTML = ''; // 清空容器
-            arr.forEach(num => {
-                const numberDiv = document.createElement('div');
-                numberDiv.className = 'number';
-                const block = document.createElement('div');
-                block.className = 'block';
-                block.style.backgroundColor = getRandomColor();
-                block.textContent = num;
-                const span = document.createElement('span');
-                span.textContent = num;
-                numberDiv.appendChild(block);
-                numberDiv.appendChild(span);
-                container.appendChild(numberDiv);
-            });
-        }
-
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
-        async function bubbleSortVisual(arr) {
-            for (let i = 0; i < arr.length - 1; i++) {
-                for (let j = 0; j < arr.length - i - 1; j++) {
-                    if (arr[j] > arr[j + 1]) {
-                        // 交換位置
-                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-                        createVisualization(arr); // 更新圖像
-                        await new Promise(resolve => setTimeout(resolve, 500)); // 延遲 500 毫秒
-                    }
-                }
-            }
-        }
-
-        function startBubbleSort() {
-            const input = document.getElementById('numbers').value;
-            if (!input) {
-                alert("請輸入數字！");
-                return;
-            }
-
-            let arr = input.split(',').map(Number);
-            if (arr.some(isNaN)) {
-                alert("請確保所有輸入都是數字！");
-                return;
-            }
-
-            createVisualization(arr); // 初始圖像
-            bubbleSortVisual(arr); // 開始排序
+        function goToHome() {
+            window.location.href = 'index.html';
         }
     </script>
 </body>
