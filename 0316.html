@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇排序法</title>
+    <style>
+        .container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .block {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: lightblue;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <label for="numbers">輸入數字 (以逗號分隔):</label>
+    <input type="text" id="numbers" placeholder="例如: 5,3,8,6,2">
+    <button onclick="startSelectionSort()">排序</button>
+    <div class="container" id="visualization"></div>
+
+    <script>
+        async function startSelectionSort() {
+            const input = document.getElementById('numbers').value;
+            const arr = input.split(',').map(num => parseInt(num.trim(), 10));
+            if (arr.some(isNaN)) {
+                alert('請輸入有效的數字！');
+                return;
+            }
+            await selectionSort(arr);
+        }
+
+        async function selectionSort(arr) {
+            const container = document.getElementById('visualization');
+            createVisualization(arr);
+            for (let i = 0; i < arr.length - 1; i++) {
+                let minIndex = i;
+                for (let j = i + 1; j < arr.length; j++) {
+                    highlightBlocks(container, [i, j]);
+                    await sleep(500);
+                    if (arr[j] < arr[minIndex]) {
+                        minIndex = j;
+                    }
+                    unhighlightBlocks(container, [i, j]);
+                }
+                if (minIndex !== i) {
+                    [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+                    createVisualization(arr);
+                    await sleep(500);
+                }
+            }
+        }
+
+        function createVisualization(arr) {
+            const container = document.getElementById('visualization');
+            container.innerHTML = '';
+            arr.forEach(num => {
+                const block = document.createElement('div');
+                block.className = 'block';
+                block.textContent = num;
+                container.appendChild(block);
+            });
+        }
+
+        function highlightBlocks(container, indices) {
+            indices.forEach(index => {
+                container.children[index].style.backgroundColor = 'orange';
+            });
+        }
+
+        function unhighlightBlocks(container, indices) {
+            indices.forEach(index => {
+                container.children[index].style.backgroundColor = 'lightblue';
+            });
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>
