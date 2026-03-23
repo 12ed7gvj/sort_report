@@ -33,6 +33,18 @@
             margin-top: 5px;
             font-weight: bold;
         }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -42,6 +54,8 @@
     <input type="text" id="numbers" placeholder="例如: 5,3,8,6,2">
     <button onclick="startBubbleSort()">排序</button>
     <div class="container" id="visualization"></div>
+    <br>
+    <a href="index.html" class="button">回到首頁</a>
 
     <script>
         function createVisualization(arr) {
