@@ -8,51 +8,182 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #2196F3;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
         }
         .array {
             display: flex;
             justify-content: center;
             margin: 20px 0;
+            flex-wrap: wrap;
         }
         .element {
-            border: 1px solid #ccc;
+            border: 2px solid #999;
             padding: 10px;
-            margin: 0 5px;
+            margin: 5px;
             background-color: #f9f9f9;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 4px;
         }
         .current {
             background-color: #ffeb3b;
+            border-color: #ff9800;
         }
         .sorted {
             background-color: #4caf50;
             color: white;
+            border-color: #388e3c;
         }
-        button {
+        .comparing {
+            background-color: #2196F3;
+            color: white;
+            border-color: #1565c0;
+        }
+        .shifting {
+            background-color: #e91e63;
+            color: white;
+            border-color: #ad1457;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        button, .button {
             padding: 10px 20px;
             font-size: 16px;
-            margin: 10px;
+            margin: 5px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        button:hover, .button:hover {
+            background-color: #1976D2;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
         .step {
             margin: 20px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 15px;
+            border-left: 4px solid #2196F3;
             background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 2px solid #999;
+        }
+        .speed-control {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .speed-control label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .speed-control input {
+            width: 150px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            border-left: 4px solid #2196F3;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <h1>插入排序法 (Insertion Sort) 演示</h1>
-    <p>插入排序是一種簡單的排序演算法。它將陣列分成已排序和未排序兩部分，每次從未排序部分取一個元素，插入到已排序部分的正確位置。</p>
-    <p>示例陣列: [5, 2, 4, 6, 1, 3]</p>
+    <div class="container">
+        <h1>插入排序法 (Insertion Sort) 演示</h1>
+        <p>插入排序是一種簡單的排序演算法。它將陣列分成已排序和未排序兩部分，每次從未排序部分取一個元素，插入到已排序部分的正確位置。</p>
 
-    <div class="array" id="arrayDisplay"></div>
-    <button id="nextStep">下一步</button>
-    <button id="reset">重置</button>
-    <a href="index.html" class="button">回主頁</a>
-    <div class="step" id="stepInfo">點擊"下一步"開始排序過程。</div>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background-color: #f9f9f9;"></div>
+                <span>未排序</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background-color: #ffeb3b; border-color: #ff9800;"></div>
+                <span>當前元素</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background-color: #2196F3; border-color: #1565c0;"></div>
+                <span>比較中</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background-color: #e91e63; border-color: #ad1457;"></div>
+                <span>移動中</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background-color: #4caf50; border-color: #388e3c;"></div>
+                <span>已排序</span>
+            </div>
+        </div>
 
-    <h2>插入排序程式碼 (JavaScript)</h2>
-    <pre><code>
+        <div class="controls">
+            <button id="nextStep">下一步</button>
+            <button id="autoPlay">自動播放</button>
+            <button id="reset">重置</button>
+            <a href="index.html" class="button">回主頁</a>
+        </div>
+
+        <div class="speed-control">
+            <label for="speed">播放速度:</label>
+            <input type="range" id="speed" min="100" max="2000" value="1000" step="100">
+            <span id="speedDisplay">1000ms</span>
+        </div>
+
+        <div class="array" id="arrayDisplay"></div>
+
+        <div class="step" id="stepInfo">點擊"下一步"或"自動播放"開始排序過程。</div>
+
+        <h2>插入排序程式碼 (JavaScript)</h2>
+        <pre><code>
 function insertionSort(arr) {
     for (let i = 1; i < arr.length; i++) {
         let key = arr[i];
@@ -65,81 +196,201 @@ function insertionSort(arr) {
     }
     return arr;
 }
-    </code></pre>
+        </code></pre>
+
+        <h2>演算法原理</h2>
+        <ul>
+            <li><strong>外層迴圈:</strong> 從第二個元素開始，逐一處理每個元素</li>
+            <li><strong>內層迴圈:</strong> 將當前元素與已排序部分的元素比較，向左移動大於當前元素的元素</li>
+            <li><strong>時間複雜度:</strong> O(n²)</li>
+            <li><strong>空間複雜度:</strong> O(1)</li>
+        </ul>
+    </div>
 
     <script>
-        let array = [5, 2, 4, 6, 1, 3];
-        let originalArray = [...array];
-        let step = 0;
-        let i = 1;
-        let j;
-        let key;
+        // 生成隨機數組
+        function generateRandomArray(size = 8, max = 50) {
+            return Array.from({length: size}, () => Math.floor(Math.random() * max) + 1);
+        }
 
-        function displayArray(arr, currentIndex = -1, sortedUpTo = -1) {
+        let array = generateRandomArray();
+        let originalArray = [...array];
+        let isAutoPlaying = false;
+        let autoPlayTimeout;
+        let currentStep = 0;
+        let steps = [];
+        let displayStates = [];
+
+        // 記錄所有步驟
+        function recordSteps() {
+            steps = [];
+            displayStates = [];
+
+            // 初始狀態
+            displayStates.push({
+                array: [...originalArray],
+                current: -1,
+                comparing: [],
+                shifting: [],
+                sorted: [],
+                message: '初始陣列: ' + JSON.stringify(originalArray)
+            });
+
+            // 模擬插入排序的步驟
+            const arr = [...originalArray];
+            for (let i = 1; i < arr.length; i++) {
+                let key = arr[i];
+                let j = i - 1;
+
+                // 取出當前元素
+                displayStates.push({
+                    array: [...arr],
+                    current: i,
+                    comparing: [],
+                    shifting: [],
+                    sorted: Array.from({length: i}, (_, idx) => idx),
+                    message: `步驟 ${i}: 取出元素 ${key} (索引 ${i})，準備插入到已排序部分 [0..${i-1}]`
+                });
+
+                // 比較和移動過程
+                while (j >= 0 && arr[j] > key) {
+                    // 比較步驟
+                    displayStates.push({
+                        array: [...arr],
+                        current: i,
+                        comparing: [j],
+                        shifting: [],
+                        sorted: Array.from({length: i}, (_, idx) => idx),
+                        message: `比較 ${key} 與 arr[${j}](${arr[j]})，${arr[j]} > ${key}`
+                    });
+
+                    // 移動步驟
+                    arr[j + 1] = arr[j];
+                    displayStates.push({
+                        array: [...arr],
+                        current: i,
+                        comparing: [],
+                        shifting: [j + 1],
+                        sorted: Array.from({length: i}, (_, idx) => idx),
+                        message: `將 arr[${j}](${arr[j]}) 右移到位置 ${j + 1}`
+                    });
+                    j--;
+                }
+
+                // 插入元素
+                arr[j + 1] = key;
+                displayStates.push({
+                    array: [...arr],
+                    current: -1,
+                    comparing: [],
+                    shifting: [],
+                    sorted: Array.from({length: i + 1}, (_, idx) => idx),
+                    message: `插入 ${key} 到正確位置，已排序部分現在是 [0..${i}]`
+                });
+            }
+
+            // 最終排序完成狀態
+            displayStates.push({
+                array: [...arr],
+                current: -1,
+                comparing: [],
+                shifting: [],
+                sorted: Array.from({length: arr.length}, (_, idx) => idx),
+                message: '排序完成！陣列已完全按升序排列。'
+            });
+        }
+
+        function displayArray(state) {
             const display = document.getElementById('arrayDisplay');
             display.innerHTML = '';
-            arr.forEach((num, index) => {
+
+            state.array.forEach((num, index) => {
                 const element = document.createElement('div');
                 element.className = 'element';
                 element.textContent = num;
-                if (index === currentIndex) {
+
+                if (state.shifting.includes(index)) {
+                    element.classList.add('shifting');
+                } else if (state.comparing.includes(index)) {
+                    element.classList.add('comparing');
+                } else if (state.current === index) {
                     element.classList.add('current');
-                }
-                if (index <= sortedUpTo) {
+                } else if (state.sorted.includes(index)) {
                     element.classList.add('sorted');
                 }
+
                 display.appendChild(element);
             });
         }
 
-        function updateStepInfo(info) {
-            document.getElementById('stepInfo').textContent = info;
+        function updateStepInfo(message) {
+            document.getElementById('stepInfo').textContent = message;
         }
 
         function reset() {
-            array = [...originalArray];
-            step = 0;
-            i = 1;
-            displayArray(array);
-            updateStepInfo('點擊"下一步"開始排序過程。');
+            array = generateRandomArray();
+            originalArray = [...array];
+            currentStep = 0;
+            isAutoPlaying = false;
+            clearTimeout(autoPlayTimeout);
+            document.getElementById('autoPlay').textContent = '自動播放';
             document.getElementById('nextStep').disabled = false;
+
+            recordSteps();
+            displayArray(displayStates[0]);
+            updateStepInfo(displayStates[0].message);
         }
 
         function nextStep() {
-            if (step === 0) {
-                displayArray(array, -1, -1);
-                updateStepInfo('初始陣列。已排序部分為空，未排序部分為整個陣列。');
-                step++;
-            } else if (i < array.length) {
-                if (step === 1) {
-                    key = array[i];
-                    j = i - 1;
-                    displayArray(array, i, i - 1);
-                    updateStepInfo(`步驟 ${i}: 取出元素 ${key} (索引 ${i})，準備插入到已排序部分 [0..${i-1}]。`);
-                    step++;
-                } else if (j >= 0 && array[j] > key) {
-                    array[j + 1] = array[j];
-                    displayArray(array, j, i - 1);
-                    updateStepInfo(`比較 ${key} 與 ${array[j]}，${array[j]} > ${key}，將 ${array[j]} 右移。`);
-                    j--;
-                } else {
-                    array[j + 1] = key;
-                    displayArray(array, -1, i);
-                    updateStepInfo(`插入 ${key} 到正確位置。已排序部分現在是 [0..${i}]。`);
-                    i++;
-                    step = 1;
-                }
-            } else {
-                displayArray(array, -1, array.length - 1);
-                updateStepInfo('排序完成！');
+            if (currentStep < displayStates.length - 1) {
+                currentStep++;
+                const state = displayStates[currentStep];
+                displayArray(state);
+                updateStepInfo(state.message);
+            } else if (currentStep === displayStates.length - 1) {
+                // 顯示排序完成
+                const state = displayStates[currentStep];
+                displayArray(state);
+                updateStepInfo(state.message);
                 document.getElementById('nextStep').disabled = true;
             }
         }
 
-        document.getElementById('nextStep').addEventListener('click', nextStep);
-        document.getElementById('reset').addEventListener('click', reset);
+        function autoPlay() {
+            const speed = parseInt(document.getElementById('speed').value);
 
-        // 初始化顯示
+            if (isAutoPlaying) {
+                isAutoPlaying = false;
+                document.getElementById('autoPlay').textContent = '自動播放';
+                document.getElementById('nextStep').disabled = false;
+                clearTimeout(autoPlayTimeout);
+            } else {
+                isAutoPlaying = true;
+                document.getElementById('autoPlay').textContent = '暫停';
+                document.getElementById('nextStep').disabled = true;
+
+                function playNext() {
+                    if (currentStep < displayStates.length - 1) {
+                        nextStep();
+                        autoPlayTimeout = setTimeout(playNext, speed);
+                    } else {
+                        isAutoPlaying = false;
+                        document.getElementById('autoPlay').textContent = '自動播放';
+                        document.getElementById('nextStep').disabled = false;
+                    }
+                }
+                playNext();
+            }
+        }
+
+        document.getElementById('nextStep').addEventListener('click', nextStep);
+        document.getElementById('autoPlay').addEventListener('click', autoPlay);
+        document.getElementById('reset').addEventListener('click', reset);
+        document.getElementById('speed').addEventListener('input', (e) => {
+            document.getElementById('speedDisplay').textContent = e.target.value + 'ms';
+        });
+
+        // 初始化
         reset();
     </script>
 </body>
