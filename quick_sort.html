@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>合併排序法演示</title>
+    <title>快速排序法演示</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -46,7 +46,7 @@
             font-weight: bold;
             border-radius: 4px;
         }
-        .current {
+        .pivot {
             background-color: #ffeb3b;
             border-color: #ff9800;
         }
@@ -60,7 +60,7 @@
             color: white;
             border-color: #1565c0;
         }
-        .merging {
+        .swapping {
             background-color: #e91e63;
             color: white;
             border-color: #ad1457;
@@ -146,25 +146,25 @@
 </head>
 <body>
     <div class="container">
-        <h1>合併排序法 (Merge Sort) 演示</h1>
-        <p>合併排序是一種分治演算法，它將陣列分成兩個相等的部分，遞歸地排序各部分，然後將排序後的部分合併在一起。</p>
-        
+        <h1>快速排序法 (Quick Sort) 演示</h1>
+        <p>快速排序是一種分治演算法。它選擇一個基準元素，將陣列分成兩個子陣列，一個包含小於基準的元素，另一個包含大於基準的元素，然後遞歸地對子陣列進行排序。</p>
+
         <div class="legend">
             <div class="legend-item">
                 <div class="legend-box" style="background-color: #f9f9f9;"></div>
                 <span>未排序</span>
             </div>
             <div class="legend-item">
-                <div class="legend-box" style="background-color: #ffeb3b;"></div>
-                <span>當前處理</span>
+                <div class="legend-box" style="background-color: #ffeb3b; border-color: #ff9800;"></div>
+                <span>基準值</span>
             </div>
             <div class="legend-item">
                 <div class="legend-box" style="background-color: #2196F3; border-color: #1565c0;"></div>
-                <span>比較</span>
+                <span>比較中</span>
             </div>
             <div class="legend-item">
                 <div class="legend-box" style="background-color: #e91e63; border-color: #ad1457;"></div>
-                <span>合併</span>
+                <span>交換中</span>
             </div>
             <div class="legend-item">
                 <div class="legend-box" style="background-color: #4caf50; border-color: #388e3c;"></div>
@@ -191,52 +191,50 @@
 
         <div class="step" id="stepInfo">點擊"下一步"或"自動播放"開始排序過程。</div>
 
-        <h2>合併排序程式碼 (JavaScript)</h2>
+        <h2>快速排序程式碼 (JavaScript)</h2>
         <pre><code>
-function mergeSort(arr) {
-    if (arr.length <= 1) return arr;
-    
-    const mid = Math.floor(arr.length / 2);
-    const left = mergeSort(arr.slice(0, mid));
-    const right = mergeSort(arr.slice(mid));
-    
-    return merge(left, right);
+function quickSort(arr, low = 0, high = arr.length - 1) {
+    if (low < high) {
+        const pi = partition(arr, low, high);
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+    return arr;
 }
 
-function merge(left, right) {
-    const result = [];
-    let i = 0, j = 0;
-    
-    while (i < left.length && j < right.length) {
-        if (left[i] <= right[j]) {
-            result.push(left[i]);
+function partition(arr, low, high) {
+    const pivot = arr[high];
+    let i = low - 1;
+
+    for (let j = low; j < high; j++) {
+        if (arr[j] <= pivot) {
             i++;
-        } else {
-            result.push(right[j]);
-            j++;
+            [arr[i], arr[j]] = [arr[j], arr[i]];
         }
     }
-    
-    return result.concat(left.slice(i)).concat(right.slice(j));
+
+    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+    return i + 1;
 }
         </code></pre>
 
         <h2>演算法原理</h2>
         <ul>
-            <li><strong>分割階段:</strong> 將陣列遞歸分成左右兩部分，直到每個子陣列只有一個元素</li>
-            <li><strong>合併階段:</strong> 比較兩個排序好的子陣列，將較小的元素放入結果陣列，直到其中一個子陣列為空</li>
-            <li><strong>時間複雜度:</strong> O(n log n)</li>
-            <li><strong>空間複雜度:</strong> O(n)</li>
+            <li><strong>基準選擇:</strong> 通常選擇最後一個元素作為基準</li>
+            <li><strong>分割階段:</strong> 將陣列重新排列，小於基準的元素放在左邊，大於基準的放在右邊</li>
+            <li><strong>遞歸排序:</strong> 對左右兩個子陣列重複上述過程</li>
+            <li><strong>時間複雜度:</strong> 平均 O(n log n)，最壞 O(n²)</li>
+            <li><strong>空間複雜度:</strong> O(log n)</li>
         </ul>
     </div>
 
     <script>
         // 生成隨機數組
-        function generateRandomArray(size = 10, max = 100) {
+        function generateRandomArray(size = 8, max = 50) {
             return Array.from({length: size}, () => Math.floor(Math.random() * max) + 1);
         }
 
-        let array = generateRandomArray(8, 50);
+        let array = generateRandomArray();
         let originalArray = [...array];
         let isAutoPlaying = false;
         let autoPlayTimeout;
@@ -254,119 +252,115 @@ function merge(left, right) {
             // 初始狀態
             displayStates.push({
                 array: [...originalArray],
-                highlighted: [],
+                pivot: -1,
                 comparing: [],
-                merging: [],
+                swapping: [],
+                sorted: [],
                 message: '初始陣列: ' + JSON.stringify(originalArray)
             });
 
-            // 模擬合併排序的步驟
-            simulateMergeSort([...originalArray], 0, originalArray.length - 1, '');
+            // 模擬快速排序的步驟
+            simulateQuickSort([...originalArray], 0, originalArray.length - 1, '');
         }
 
-        function simulateMergeSort(arr, left, right, depth) {
-            if (left >= right) return;
+        function simulateQuickSort(arr, low, high, depth) {
+            if (low >= high) return;
 
-            const mid = Math.floor((left + right) / 2);
-            
-            // 記錄分割步驟
-            const comparingIndices = [];
-            for (let i = left; i <= right; i++) {
-                comparingIndices.push(i);
-            }
+            const pivotIndex = high;
+            const pivot = arr[pivotIndex];
 
+            // 選擇基準
             displayStates.push({
                 array: [...arr],
-                highlighted: [],
-                comparing: comparingIndices,
-                merging: [],
-                message: `第 ${depth} 層: 分割範圍 [${left}..${right}]`
+                pivot: pivotIndex,
+                comparing: [],
+                swapping: [],
+                sorted: [],
+                message: `第 ${depth} 層: 選擇基準值 ${pivot} (索引 ${pivotIndex})`
             });
 
-            simulateMergeSort(arr, left, mid, depth + 1);
-            simulateMergeSort(arr, mid + 1, right, depth + 1);
-            simulateMergeRecording(arr, left, mid, right, depth);
-        }
+            let i = low - 1;
 
-        function simulateMergeRecording(arr, left, mid, right, depth) {
-            const leftArr = arr.slice(left, mid + 1);
-            const rightArr = arr.slice(mid + 1, right + 1);
-            const merged = [];
-            let i = 0, j = 0;
-
-            while (i < leftArr.length && j < rightArr.length) {
-                const mergingIndices = [];
-                for (let k = left + i + j; k <= right; k++) {
-                    mergingIndices.push(k);
-                }
-
-                if (leftArr[i] <= rightArr[j]) {
-                    merged.push(leftArr[i]);
-                    i++;
-                } else {
-                    merged.push(rightArr[j]);
-                    j++;
-                }
-
-                const tempArr = [...arr];
-                for (let k = 0; k < merged.length; k++) {
-                    tempArr[left + k] = merged[k];
-                }
-
+            for (let j = low; j < high; j++) {
+                // 比較步驟
                 displayStates.push({
-                    array: [...tempArr],
-                    highlighted: [left + merged.length - 1],
-                    comparing: [mid, mid + 1],
-                    merging: mergingIndices,
-                    message: `第 ${depth} 層: 合併 [${left}..${mid}] 和 [${mid + 1}..${right}]，比較 ${leftArr[i - 1]} 和 ${rightArr[j]}`
+                    array: [...arr],
+                    pivot: pivotIndex,
+                    comparing: [j],
+                    swapping: [],
+                    sorted: [],
+                    message: `比較 arr[${j}](${arr[j]}) 與基準值 ${pivot}`
                 });
+
+                if (arr[j] <= pivot) {
+                    i++;
+                    if (i !== j) {
+                        // 交換步驟
+                        [arr[i], arr[j]] = [arr[j], arr[i]];
+                        displayStates.push({
+                            array: [...arr],
+                            pivot: pivotIndex,
+                            comparing: [],
+                            swapping: [i, j],
+                            sorted: [],
+                            message: `交換 arr[${i}] 和 arr[${j}]，因為 ${arr[j]} <= ${pivot}`
+                        });
+                    }
+                }
             }
 
-            // 複製剩餘元素
-            while (i < leftArr.length) {
-                merged.push(leftArr[i]);
-                i++;
-            }
-            while (j < rightArr.length) {
-                merged.push(rightArr[j]);
-                j++;
-            }
+            // 將基準放到正確位置
+            const finalPivotPos = i + 1;
+            [arr[finalPivotPos], arr[high]] = [arr[high], arr[finalPivotPos]];
 
-            for (let k = 0; k < merged.length; k++) {
-                arr[left + k] = merged[k];
-            }
+            displayStates.push({
+                array: [...arr],
+                pivot: finalPivotPos,
+                comparing: [],
+                swapping: [finalPivotPos, high],
+                sorted: [finalPivotPos],
+                message: `將基準值放到正確位置 ${finalPivotPos}`
+            });
 
-            const finalMergingIndices = [];
-            for (let k = left; k <= right; k++) {
-                finalMergingIndices.push(k);
+            // 遞歸排序左右子陣列
+            simulateQuickSort(arr, low, finalPivotPos - 1, depth + 1);
+            simulateQuickSort(arr, finalPivotPos + 1, high, depth + 1);
+
+            // 標記整個範圍為已排序
+            const sortedIndices = [];
+            for (let k = low; k <= high; k++) {
+                sortedIndices.push(k);
             }
 
             displayStates.push({
                 array: [...arr],
-                highlighted: finalMergingIndices,
+                pivot: -1,
                 comparing: [],
-                merging: [],
-                message: `第 ${depth} 層: 合併完成，範圍 [${left}..${right}] 已排序`
+                swapping: [],
+                sorted: sortedIndices,
+                message: `第 ${depth} 層: 範圍 [${low}..${high}] 排序完成`
             });
         }
 
         function displayArray(state) {
             const display = document.getElementById('arrayDisplay');
             display.innerHTML = '';
-            
+
             state.array.forEach((num, index) => {
                 const element = document.createElement('div');
                 element.className = 'element';
                 element.textContent = num;
-                
-                if (state.merging.includes(index)) {
-                    element.classList.add('merging');
+
+                if (state.swapping.includes(index)) {
+                    element.classList.add('swapping');
                 } else if (state.comparing.includes(index)) {
                     element.classList.add('comparing');
-                } else if (state.highlighted.includes(index)) {
+                } else if (state.pivot === index) {
+                    element.classList.add('pivot');
+                } else if (state.sorted.includes(index)) {
                     element.classList.add('sorted');
                 }
-                
+
                 display.appendChild(element);
             });
         }
@@ -379,14 +373,14 @@ function merge(left, right) {
             const timeDisplay = document.getElementById('timeDisplay');
             if (endTime > 0) {
                 const elapsed = endTime - startTime;
-                timeDisplay.textContent = `排序時間: ${elapsed.toFixed(2)}ms`;
+                timeDisplay.textContent = `排序時間: ${elapsed}ms`;
             } else {
                 timeDisplay.textContent = '排序時間: 0ms';
             }
         }
 
         function reset() {
-            array = generateRandomArray(8, 50);
+            array = generateRandomArray();
             originalArray = [...array];
             currentStep = 0;
             isAutoPlaying = false;
@@ -395,7 +389,7 @@ function merge(left, right) {
             document.getElementById('nextStep').disabled = false;
             startTime = 0;
             endTime = 0;
-            
+
             recordSteps();
             displayArray(displayStates[0]);
             updateStepInfo(displayStates[0].message);
@@ -421,14 +415,14 @@ function merge(left, right) {
                 // 顯示排序完成
                 const state = displayStates[currentStep];
                 displayArray(state);
-                updateStepInfo('排序完成！陣列已完全按升序排列。');
+                updateStepInfo(state.message);
                 document.getElementById('nextStep').disabled = true;
             }
         }
 
         function autoPlay() {
             const speed = parseInt(document.getElementById('speed').value);
-            
+
             if (isAutoPlaying) {
                 isAutoPlaying = false;
                 document.getElementById('autoPlay').textContent = '自動播放';
@@ -438,7 +432,7 @@ function merge(left, right) {
                 isAutoPlaying = true;
                 document.getElementById('autoPlay').textContent = '暫停';
                 document.getElementById('nextStep').disabled = true;
-                
+
                 function playNext() {
                     if (currentStep === 0) {
                         startTime = performance.now();

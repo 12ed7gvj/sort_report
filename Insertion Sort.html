@@ -124,6 +124,13 @@
         .speed-control input {
             width: 150px;
         }
+        .time-display {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2196F3;
+        }
         pre {
             background-color: #f4f4f4;
             padding: 15px;
@@ -178,6 +185,8 @@
             <span id="speedDisplay">1000ms</span>
         </div>
 
+        <div class="time-display" id="timeDisplay">排序時間: 0ms</div>
+
         <div class="array" id="arrayDisplay"></div>
 
         <div class="step" id="stepInfo">點擊"下一步"或"自動播放"開始排序過程。</div>
@@ -220,6 +229,8 @@ function insertionSort(arr) {
         let currentStep = 0;
         let steps = [];
         let displayStates = [];
+        let startTime = 0;
+        let endTime = 0;
 
         // 記錄所有步驟
         function recordSteps() {
@@ -327,6 +338,16 @@ function insertionSort(arr) {
             document.getElementById('stepInfo').textContent = message;
         }
 
+        function updateTimeDisplay() {
+            const timeDisplay = document.getElementById('timeDisplay');
+            if (endTime > 0) {
+                const elapsed = endTime - startTime;
+                timeDisplay.textContent = `排序時間: ${elapsed.toFixed(2)}ms`;
+            } else {
+                timeDisplay.textContent = '排序時間: 0ms';
+            }
+        }
+
         function reset() {
             array = generateRandomArray();
             originalArray = [...array];
@@ -335,18 +356,30 @@ function insertionSort(arr) {
             clearTimeout(autoPlayTimeout);
             document.getElementById('autoPlay').textContent = '自動播放';
             document.getElementById('nextStep').disabled = false;
+            startTime = 0;
+            endTime = 0;
 
             recordSteps();
             displayArray(displayStates[0]);
             updateStepInfo(displayStates[0].message);
+            updateTimeDisplay();
         }
 
         function nextStep() {
+            if (currentStep === 0) {
+                startTime = performance.now();
+            }
+
             if (currentStep < displayStates.length - 1) {
                 currentStep++;
                 const state = displayStates[currentStep];
                 displayArray(state);
                 updateStepInfo(state.message);
+
+                if (currentStep === displayStates.length - 1) {
+                    endTime = performance.now();
+                    updateTimeDisplay();
+                }
             } else if (currentStep === displayStates.length - 1) {
                 // 顯示排序完成
                 const state = displayStates[currentStep];
@@ -370,6 +403,10 @@ function insertionSort(arr) {
                 document.getElementById('nextStep').disabled = true;
 
                 function playNext() {
+                    if (currentStep === 0) {
+                        startTime = performance.now();
+                    }
+
                     if (currentStep < displayStates.length - 1) {
                         nextStep();
                         autoPlayTimeout = setTimeout(playNext, speed);
@@ -377,6 +414,8 @@ function insertionSort(arr) {
                         isAutoPlaying = false;
                         document.getElementById('autoPlay').textContent = '自動播放';
                         document.getElementById('nextStep').disabled = false;
+                        endTime = performance.now();
+                        updateTimeDisplay();
                     }
                 }
                 playNext();
