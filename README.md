@@ -1,7 +1,8 @@
 # 排序報告
-學號: 11428120
-姓名: 許軒緷
-模擬頁面: https://jia-yin.github.io/sort_report/
+
+學號: 11428120  
+姓名: 許軒緷  
+模擬頁面: https://jia-yin.github.io/sort_report/  
 
 
 
