@@ -198,7 +198,7 @@
 
         <div class="input-control">
             <label for="arraySize">輸入元素個數 n:</label>
-            <input type="number" id="arraySize" min="4" max="20" value="8">
+            <input type="number" id="arraySize" min="4" max="1000" value="8">
             <button id="setSize">設定</button>
             <div class="complexity-note" id="complexityNote">時間變化：O(n²)，隨 n 增加約成長為 n²。</div>
         </div>
@@ -257,7 +257,7 @@ function bubbleSort(arr) {
         let endTime = 0;
         const defaultSize = 8;
         const minSize = 4;
-        const maxSize = 20;
+        const maxSize = 1000;
 
         function getArraySize() {
             const input = document.getElementById('arraySize');
