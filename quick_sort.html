@@ -124,6 +124,27 @@
         .speed-control input {
             width: 150px;
         }
+        .input-control {
+            text-align: center;
+            margin: 10px 0 20px;
+        }
+        .input-control label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .input-control input {
+            width: 80px;
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .complexity-note {
+            text-align: center;
+            margin-top: 10px;
+            color: #333;
+            font-weight: bold;
+        }
         .time-display {
             text-align: center;
             margin: 15px 0;
@@ -179,6 +200,13 @@
             <a href="index.html" class="button">回主頁</a>
         </div>
 
+        <div class="input-control">
+            <label for="arraySize">輸入元素個數 n:</label>
+            <input type="number" id="arraySize" min="4" max="20" value="8">
+            <button id="setSize">設定</button>
+            <div class="complexity-note" id="complexityNote">時間變化：O(n log n)，隨 n 增加約成長為 n log n。</div>
+        </div>
+
         <div class="speed-control">
             <label for="speed">播放速度:</label>
             <input type="range" id="speed" min="100" max="2000" value="1000" step="100">
@@ -223,7 +251,7 @@ function partition(arr, low, high) {
             <li><strong>基準選擇:</strong> 通常選擇最後一個元素作為基準</li>
             <li><strong>分割階段:</strong> 將陣列重新排列，小於基準的元素放在左邊，大於基準的放在右邊</li>
             <li><strong>遞歸排序:</strong> 對左右兩個子陣列重複上述過程</li>
-            <li><strong>時間複雜度:</strong> 平均 O(n log n)，最壞 O(n²)</li>
+            <li><strong>時間複雜度:</strong> 平均 O(n log n)，當 n 增加時約成長為 n log n；最壞情況為 O(n²)</li>
             <li><strong>空間複雜度:</strong> O(log n)</li>
         </ul>
     </div>
@@ -243,6 +271,25 @@ function partition(arr, low, high) {
         let displayStates = [];
         let startTime = 0;
         let endTime = 0;
+        const defaultSize = 8;
+        const minSize = 4;
+        const maxSize = 20;
+
+        function getArraySize() {
+            const input = document.getElementById('arraySize');
+            let size = parseInt(input.value, 10);
+            if (Number.isNaN(size)) {
+                size = defaultSize;
+            }
+            size = Math.max(minSize, Math.min(maxSize, size));
+            input.value = size;
+            return size;
+        }
+
+        function updateComplexityNote() {
+            const size = getArraySize();
+            document.getElementById('complexityNote').textContent = `元素數量：${size}，時間變化：O(n log n)，隨 n 增加約成長為 n log n。`;
+        }
 
         // 記錄所有步驟
         function recordSteps() {
@@ -380,7 +427,8 @@ function partition(arr, low, high) {
         }
 
         function reset() {
-            array = generateRandomArray();
+            const size = getArraySize();
+            array = generateRandomArray(size);
             originalArray = [...array];
             currentStep = 0;
             isAutoPlaying = false;
@@ -390,6 +438,7 @@ function partition(arr, low, high) {
             startTime = 0;
             endTime = 0;
 
+            updateComplexityNote();
             recordSteps();
             displayArray(displayStates[0]);
             updateStepInfo(displayStates[0].message);
@@ -456,6 +505,8 @@ function partition(arr, low, high) {
         document.getElementById('nextStep').addEventListener('click', nextStep);
         document.getElementById('autoPlay').addEventListener('click', autoPlay);
         document.getElementById('reset').addEventListener('click', reset);
+        document.getElementById('setSize').addEventListener('click', reset);
+        document.getElementById('arraySize').addEventListener('input', updateComplexityNote);
         document.getElementById('speed').addEventListener('input', (e) => {
             document.getElementById('speedDisplay').textContent = e.target.value + 'ms';
         });
